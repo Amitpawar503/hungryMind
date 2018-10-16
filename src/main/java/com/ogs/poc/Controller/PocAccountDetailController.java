@@ -1,8 +1,5 @@
 package com.ogs.poc.Controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ogs.poc.beans.AccountDetails;
@@ -20,7 +18,6 @@ import com.ogs.poc.service.PocAccountDetailService;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.http.HttpStatus;
-import static com.ogs.poc.constant.CoreModuleConstant.REQUESTTYPE;
 
 @Controller
 @RequestMapping("/operatorwalletplatform/path/to/wallet")
@@ -33,18 +30,14 @@ public class PocAccountDetailController {
 
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	@ResponseBody
-	public  ResponseEntity<AccountDetails> getAccount(HttpServletRequest request, HttpSession httpSession) throws CoreException{
+	public ResponseEntity<AccountDetails> getAccount(@RequestParam String sessionid) throws CoreException {
 
-		request.setAttribute("requestType", REQUESTTYPE);
-		httpSession.setAttribute("sessionId", "123456789");
-
-		String requestType = request.getAttribute("requestType").toString();
 		AccountDetails details = new AccountDetails();
 
-		if (isNotBlank(requestType) && REQUESTTYPE.equals(requestType)) {
-			details = pocService.getAccountDetails(httpSession);
+		if (isNotBlank(sessionid)) {
+			details = pocService.getAccountDetails(sessionid);
 		}
-		return new ResponseEntity<AccountDetails>(details,HttpStatus.OK);
+		return new ResponseEntity<AccountDetails>(details, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(Exception.class)
