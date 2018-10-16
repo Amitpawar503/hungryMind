@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk
 MAINTAINER <amitpanwar503@gmail.com>
 
-EXPOSE 4567
+EXPOSE 7000
 
 VOLUME /data
 
