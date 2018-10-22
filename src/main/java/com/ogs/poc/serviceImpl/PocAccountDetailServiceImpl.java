@@ -9,7 +9,9 @@ import org.springframework.web.client.RestTemplate;
 import com.ogs.poc.beans.AccountDetails;
 import com.ogs.poc.exception.CoreException;
 import com.ogs.poc.repository.AccountDetailsRepository;
+import com.ogs.poc.repository.RealSetRepository;
 import com.ogs.poc.service.PocAccountDetailService;
+import com.ogs.poc.utils.RandomNumberGenerationUtil;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -19,6 +21,15 @@ public class PocAccountDetailServiceImpl implements PocAccountDetailService {
 	@Autowired
 	private AccountDetailsRepository accountDetailsRepository;
 
+	@Autowired
+	private RealSetRepository realSetRepository;
+
+	private RandomNumberGenerationUtil randomNumberGenarationUtil;
+
+	public PocAccountDetailServiceImpl(RandomNumberGenerationUtil randomNumberGenarationUtil) {
+		this.randomNumberGenarationUtil = randomNumberGenarationUtil;
+	}
+
 	Logger logger = LoggerFactory.getLogger(PocAccountDetailServiceImpl.class);
 
 	public AccountDetails getAccountDetails(String sessionId) throws CoreException {
@@ -27,15 +38,16 @@ public class PocAccountDetailServiceImpl implements PocAccountDetailService {
 		if (isNotBlank(sessionId)) {
 
 			RestTemplate restTemplate = new RestTemplate();
-			String url = String.format("http://localhost:8082/wiapi/mockapi?request=getaccount&sessionid=%s",sessionId);
+			String url = String.format("http://localhost:8082/wiapi/mockapi?request=getaccount&sessionid=%s",
+					sessionId);
 			try {
 				details = restTemplate.getForObject(url, AccountDetails.class);
 			} catch (Exception ex) {
 				logger.error("Account details are not present");
-				throw new CoreException("invalid data"+ex);
+				throw new CoreException("invalid data" + ex);
 			}
-			
-			//details.setAccountId(object.getClass().getResource("accountId").toString());
+
+			// details.setAccountId(object.getClass().getResource("accountId").toString());
 
 			logger.info("Get the account details");
 
@@ -58,6 +70,9 @@ public class PocAccountDetailServiceImpl implements PocAccountDetailService {
 		logger.info("Created ToDo " + details2.getGameSessionId());
 
 		logger.warn("Created ToDo " + details2.getCountry());
+
+		logger.warn("random number" + randomNumberGenarationUtil.getRandomNumberInRange(1, 30));
+		logger.warn("----------------------" + realSetRepository.findAll().get(0).real1);
 
 		return details;
 	}
